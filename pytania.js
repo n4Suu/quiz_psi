@@ -506,8 +506,8 @@ const questionsData = [
   {
     "id": 85,
     "question": "W jaki sposób należy ustawić tło koloru białego dla wszystkich elementów typu h1",
-    "answers": ["all.h1 {background-color: #FFF;}", "h1 {background-color: #FFF;}", "h1 {background-color: #FFF;}", "h1.all {background-color: #FFF;}"],
-    "correct": 1
+    "answers": ["all.h1 {background-color: #FFF;}", ".h1 {background-color: #FFF;}", "h1 {background-color: #FFF;}", "h1.all {background-color: #FFF;}"],
+    "correct": 2
   },
   {
     "id": 86,
