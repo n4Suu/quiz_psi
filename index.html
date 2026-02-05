@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pełny Quiz PSI - Ciemny Motyw</title>
+    <title>Quiz PSI</title>
     <style>
         /* Prosty styl dla ciemnego motywu */
         body {
@@ -33,15 +33,24 @@
             background-color: #333;
             color: white;
             border: 1px solid #555;
-            padding: 10px 20px;
-            margin: 5px;
+            padding: 15px 20px; /* Nieco większe przyciski */
+            margin: 8px 0;
             width: 100%;
             cursor: pointer;
             border-radius: 5px;
             font-size: 16px;
-            text-align: left;
+            text-align: left; /* Domyślne wyrównanie dla odpowiedzi */
             transition: background 0.3s;
         }
+
+        /* Styl dla przycisków menu (wyśrodkowany tekst) */
+        .menu-btn {
+            text-align: center;
+            background-color: #bb86fc; /* Wyróżniający kolor */
+            color: #000;
+            font-weight: bold;
+        }
+        .menu-btn:hover { background-color: #9f75cf; }
 
         .btn:hover { background-color: #444; }
 
@@ -65,12 +74,27 @@
             margin-bottom: 15px;
             color: #aaa;
         }
+
+        /* Klasa do ukrywania elementów */
+        .hidden { display: none; }
+        
+        #error-msg { color: #cf6679; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <h1>Quiz Wiedzy (Wszystkie Pytania)</h1>
+<div id="start-screen" class="quiz-container">
+    <h1>Quiz Wiedzy PSI</h1>
+    <p>Wybierz tryb gry:</p>
+    
+    <button class="btn menu-btn" onclick="startMode('all')">Wszystkie pytania</button>
+    <button class="btn menu-btn" onclick="startMode('random30')">Losowe 30 pytań</button>
+
+    <div id="error-msg"></div>
+</div>
+
+<div id="quiz-screen" class="quiz-container hidden">
+    <h1 id="quiz-title">Quiz</h1>
     <div class="score-box">Pytanie: <span id="current-q">1</span> / <span id="total-q">0</span></div>
     
     <div id="question-text" style="font-size: 1.2em; margin-bottom: 20px;">
@@ -80,33 +104,67 @@
     <div id="answer-buttons">
         </div>
 
-    <button id="next-btn" class="btn" onclick="nextQuestion()">Następne pytanie</button>
+    <button id="next-btn" class="btn" style="text-align: center;" onclick="nextQuestion()">Następne pytanie</button>
 </div>
 
 <script src="pytania.js"></script>
 
 <script>
-    // --- LOGIKA QUIZU ---
+    // --- ZMIENNE GLOBALNE ---
     let currentQuestionIndex = 0;
     let score = 0;
-    let questions = [];
+    let questions = []; // Tutaj trafią pytania (wszystkie lub wylosowane)
+
+    // --- ELEMENTY DOM ---
+    const startScreen = document.getElementById('start-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const errorMsg = document.getElementById('error-msg');
 
     const questionElement = document.getElementById('question-text');
     const answerButtonsElement = document.getElementById('answer-buttons');
     const nextButton = document.getElementById('next-btn');
     const currentQSpan = document.getElementById('current-q');
     const totalQSpan = document.getElementById('total-q');
+    const quizTitle = document.getElementById('quiz-title');
 
-
-    // Sprawdzamy, czy plik pytania.js się załadował
-    if (typeof questionsData !== 'undefined') {
-        questions = questionsData;
-        startQuiz();
-    } else {
-        document.getElementById('question-text').innerText = "Błąd: Nie znaleziono pliku 'pytania.js'. Upewnij się, że jest w tym samym folderze co index.html";
+    // --- SPRAWDZENIE CZY PLIK DZIAŁA ---
+    if (typeof questionsData === 'undefined') {
+        errorMsg.innerText = "Błąd: Nie znaleziono pliku 'pytania.js'. Upewnij się, że jest w tym samym folderze.";
+        // Blokujemy przyciski, jeśli nie ma danych
+        const menuBtns = document.querySelectorAll('.menu-btn');
+        menuBtns.forEach(btn => btn.disabled = true);
     }
 
+    // --- FUNKCJA WYBORU TRYBU ---
+    function startMode(mode) {
+        if (typeof questionsData === 'undefined') return;
+
+        // Kopiujemy dane, żeby nie niszczyć oryginału
+        let allQuestions = [...questionsData];
+
+        if (mode === 'all') {
+            questions = allQuestions;
+            quizTitle.innerText = "Wszystkie Pytania";
+        } else if (mode === 'random30') {
+            // Algorytm losujący (Fisher-Yates shuffle - uproszczony)
+            questions = allQuestions.sort(() => 0.5 - Math.random());
+            // Wybieramy pierwsze 30
+            questions = questions.slice(0, 30);
+            quizTitle.innerText = "Losowe 30 Pytań";
+        }
+
+        // Przełączamy widok
+        startScreen.classList.add('hidden');
+        quizScreen.classList.remove('hidden');
+
+        // Startujemy quiz
+        startQuiz();
+    }
+
+    // --- LOGIKA QUIZU ---
     function startQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
         totalQSpan.innerText = questions.length;
         showQuestion();
     }
@@ -114,9 +172,12 @@
     function showQuestion() {
         resetState();
         let currentQuestion = questions[currentQuestionIndex];
+        
+        // Wyświetlanie treści pytania
         questionElement.innerText = currentQuestion.question;
         currentQSpan.innerText = currentQuestionIndex + 1;
 
+        // Generowanie przycisków odpowiedzi
         currentQuestion.answers.forEach((answer, index) => {
             const button = document.createElement('button');
             button.innerText = answer;
@@ -135,6 +196,7 @@
         const correctIndex = questions[currentQuestionIndex].correct;
         
         const buttons = answerButtonsElement.children;
+        // Zablokuj wszystkie przyciski po wyborze
         for(let btn of buttons) {
             btn.disabled = true;
         }
@@ -144,7 +206,7 @@
             score++;
         } else {
             selectedButton.classList.add('wrong');
-            // Jeśli odpowiedź jest inna niż a, b, c, d (np. błąd w pliku), to zabezpieczamy się
+            // Podświetl poprawną odpowiedź, jeśli wybrano źle
             if(buttons[correctIndex]) {
                 buttons[correctIndex].classList.add('correct');
             }
@@ -165,9 +227,11 @@
     function showScore() {
         resetState();
         questionElement.innerText = `Koniec! Twój wynik: ${score} na ${questions.length}`;
-        nextButton.innerText = "Zacznij od nowa";
+        
+        // Zmieniamy przycisk "Następne" na "Menu Główne"
+        nextButton.innerText = "Wróć do Menu";
         nextButton.style.display = 'block';
-        nextButton.onclick = () => location.reload();
+        nextButton.onclick = () => location.reload(); // Odświeżenie strony wraca do menu
     }
 </script>
 
