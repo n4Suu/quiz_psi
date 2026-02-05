@@ -139,7 +139,7 @@ const questionsData = [
   },
   {
     "id": 24,
-    "question": "Dany jest kod Aplikacji z nasłuchem kliknięcia. Kliknięcie na element #link spowoduje:",
+    "question": "Kliknięcie na element #link spowoduje:",
     "answers": ["wyświetlenie w konsoli przeglądarki wartości 12", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ obiekt e nie posiada metody preventDefault();", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ nieznany jest element x", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ metoda kliknięcie nie otrzymuje wartości parametru e"],
     "correct": 2
   },
