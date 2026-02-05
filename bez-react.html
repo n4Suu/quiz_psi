@@ -123,38 +123,66 @@ function startAllSmart(){
 
 
 function show(){
-    const q=questions[current];
-    document.getElementById('question-text').innerText=q.question;
-    document.getElementById('current-q').innerText=current+1;
-    const box=document.getElementById('answer-buttons');
+    const q = questions[current];
+    document.getElementById('question-text').innerText = q.question;
+    document.getElementById('current-q').innerText = current+1;
+    const box = document.getElementById('answer-buttons');
     box.innerHTML='';
     document.getElementById('next-btn').style.display='none';
-    q.answers.forEach((a,i)=>{
-        const b=document.createElement('button');
-        b.className='btn'; b.innerText=a;
-        b.onclick=()=>select(i,b);
+
+    // 1. Tworzymy pary: odpowiedź + oryginalny indeks
+    let answersWithIndex = q.answers.map((text, index) => {
+        return { text: text, originalIndex: index };
+    });
+
+    // 2. MIESZANIE ALGORYTMEM FISHERA-YATESA (Prawdziwa losowość)
+    for (let i = answersWithIndex.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        // Zamiana miejscami
+        [answersWithIndex[i], answersWithIndex[j]] = [answersWithIndex[j], answersWithIndex[i]];
+    }
+
+    // 3. Wyświetlanie
+    answersWithIndex.forEach((item) => {
+        const b = document.createElement('button');
+        b.className = 'btn'; 
+        b.innerText = item.text;
+        
+        // Zapisujemy oryginalny indeks, żeby wiedzieć czy to dobra odpowiedź
+        b.dataset.idx = item.originalIndex;
+
+        b.onclick = () => select(item.originalIndex, b);
         box.appendChild(b);
     });
 }
 
-function select(i,btn){
-    const q=questions[current];
-    const stats=getStats();
+function select(i, btn){
+    const q = questions[current];
+    const stats = getStats();
     if(!stats[q.id]) stats[q.id]={shown:0,wrong:0};
     stats[q.id].shown++;
-    if(i!==q.correct) stats[q.id].wrong++;
+    if(i !== q.correct) stats[q.id].wrong++;
     saveStats(stats);
 
-    const used=getUsed(); if(!used.includes(q.id)){ used.push(q.id); saveUsed(used); }
+    const used = getUsed(); 
+    if(!used.includes(q.id)){ used.push(q.id); saveUsed(used); }
 
     [...document.getElementById('answer-buttons').children]
-        .forEach(b=>b.disabled=true);
+        .forEach(b => b.disabled = true);
 
-    if(i===q.correct){ btn.classList.add('correct'); score++; }
-    else {
+    if(i === q.correct){ 
+        btn.classList.add('correct'); 
+        score++; 
+    } else {
         btn.classList.add('wrong');
-        document.getElementById('answer-buttons')
-            .children[q.correct].classList.add('correct');
+        
+        // Znajdź poprawny przycisk wśród wymieszanych
+        const buttons = document.getElementById('answer-buttons').children;
+        for (let b of buttons) {
+            if (parseInt(b.dataset.idx) === q.correct) {
+                b.classList.add('correct');
+            }
+        }
     }
     document.getElementById('next-btn').style.display='block';
 }

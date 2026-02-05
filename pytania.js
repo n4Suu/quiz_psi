@@ -139,7 +139,7 @@ const questionsData = [
   },
   {
     "id": 24,
-    "question": "Kliknięcie na element #link spowoduje:\n\n<pre><code>class Aplikacja {\n  init() {\n    this.x = 12;\n    this.document\n      .querySelector(\"#link\")\n      .addEventListener(\"click\", this.klikniecie);\n  }\n  klikniecie(e) {\n    e.preventDefault();\n    console.log(this.x);\n  }\n}</code></pre>",
+    "question": "Kliknięcie na element #link spowoduje:\n\nclass Aplikacja {\n  init() {\n    this.x = 12;\n    this.document.querySelector(\"#link\").addEventListener(\"click\", this.klikniecie);\n}\n  klikniecie(e) {\n    e.preventDefault();\n    console.log(this.x);\n  }\n}",
     "answers": ["wyświetlenie w konsoli przeglądarki wartości 12", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ obiekt e nie posiada metody preventDefault();", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ nieznany jest element x", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ metoda kliknięcie nie otrzymuje wartości parametru e"
     ],
     "correct": 2
