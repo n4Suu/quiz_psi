@@ -411,7 +411,7 @@ const questionsData = [
   {
     "id": 69,
     "question": "Który fragment jest poprawnym zapisem w formacie JSON:",
-    "answers": ["\"{imie:'Ala', nazwisko:'Kowalska'}\"", "\"{"imie":"Ala", "nazwisko":"Kowalska"}\"", "\"{'imie':'Ala'; 'nazwisko:'Kowalska';}\"", "\"{'imie':'Ala', 'nazwisko':'Kowalska', wiek:function() {return 12;}}\""],
+    "answers": ["\"{imie:'Ala', nazwisko:'Kowalska'}\"", "{\"imie\":\"Ala\",\"nazwisko\":\"Kowalska\"}", "\"{'imie':'Ala'; 'nazwisko:'Kowalska';}\"", "\"{'imie':'Ala', 'nazwisko':'Kowalska', wiek:function() {return 12;}}\""],
     "correct": 1
   },
   {
