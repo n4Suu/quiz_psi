@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pełny Quiz PSI - Ciemny Motyw</title>
+    <style>
+        /* Prosty styl dla ciemnego motywu */
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .quiz-container {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h1 { color: #bb86fc; }
+
+        .btn {
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 10px 20px;
+            margin: 5px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: left;
+            transition: background 0.3s;
+        }
+
+        .btn:hover { background-color: #444; }
+
+        .btn.correct { background-color: #4caf50; border-color: #4caf50; }
+        .btn.wrong { background-color: #f44336; border-color: #f44336; }
+
+        #next-btn {
+            background-color: #bb86fc;
+            color: black;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .score-box {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>Quiz Wiedzy (Wszystkie Pytania)</h1>
+    <div class="score-box">Pytanie: <span id="current-q">1</span> / <span id="total-q">0</span></div>
+    
+    <div id="question-text" style="font-size: 1.2em; margin-bottom: 20px;">
+        Ładowanie pytań...
+    </div>
+
+    <div id="answer-buttons">
+        </div>
+
+    <button id="next-btn" class="btn" onclick="nextQuestion()">Następne pytanie</button>
+</div>
+
+<script src="pytania.js"></script>
+
+<script>
+    // --- LOGIKA QUIZU ---
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let questions = [];
+
+    // Sprawdzamy, czy plik pytania.js się załadował
+    if (typeof questionsData !== 'undefined') {
+        questions = questionsData;
+        startQuiz();
+    } else {
+        document.getElementById('question-text').innerText = "Błąd: Nie znaleziono pliku 'pytania.js'. Upewnij się, że jest w tym samym folderze co index.html";
+    }
+
+    const questionElement = document.getElementById('question-text');
+    const answerButtonsElement = document.getElementById('answer-buttons');
+    const nextButton = document.getElementById('next-btn');
+    const currentQSpan = document.getElementById('current-q');
+    const totalQSpan = document.getElementById('total-q');
+
+    function startQuiz() {
+        totalQSpan.innerText = questions.length;
+        showQuestion();
+    }
+
+    function showQuestion() {
+        resetState();
+        let currentQuestion = questions[currentQuestionIndex];
+        questionElement.innerText = currentQuestion.question;
+        currentQSpan.innerText = currentQuestionIndex + 1;
+
+        currentQuestion.answers.forEach((answer, index) => {
+            const button = document.createElement('button');
+            button.innerText = answer;
+            button.classList.add('btn');
+            button.addEventListener('click', () => selectAnswer(index, button));
+            answerButtonsElement.appendChild(button);
+        });
+    }
+
+    function resetState() {
+        nextButton.style.display = 'none';
+        answerButtonsElement.innerHTML = '';
+    }
+
+    function selectAnswer(selectedIndex, selectedButton) {
+        const correctIndex = questions[currentQuestionIndex].correct;
+        
+        const buttons = answerButtonsElement.children;
+        for(let btn of buttons) {
+            btn.disabled = true;
+        }
+
+        if (selectedIndex === correctIndex) {
+            selectedButton.classList.add('correct');
+            score++;
+        } else {
+            selectedButton.classList.add('wrong');
+            // Jeśli odpowiedź jest inna niż a, b, c, d (np. błąd w pliku), to zabezpieczamy się
+            if(buttons[correctIndex]) {
+                buttons[correctIndex].classList.add('correct');
+            }
+        }
+
+        nextButton.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            showQuestion();
+        } else {
+            showScore();
+        }
+    }
+
+    function showScore() {
+        resetState();
+        questionElement.innerText = `Koniec! Twój wynik: ${score} na ${questions.length}`;
+        nextButton.innerText = "Zacznij od nowa";
+        nextButton.style.display = 'block';
+        nextButton.onclick = () => location.reload();
+    }
+</script>
+
+</body>
+</html>
