@@ -160,7 +160,7 @@ const questionsData = [
     "id": 27,
     "question": "Dany jest fragment strony html <div class=”Z”><div class=”W”>BBB</div></div> Które reguły pozwolą umieścić element wewnętrzny o 3px od lewej krawędzi elementu zewnętrznego.",
     "answers": ["div Z {position: relative, left, 3px}, div W {position: absolute}", "div Z {position: absolute}, div W {position: relative, left: 3px}", " div Z {position: relative}, div W {position: absolute, left: 3px}", "div Z {position: static, left, 3px}, div W {position: absolute}"],
-    "correct": 1
+    "correct": 2
   },
   {
     "id": 28,
@@ -411,8 +411,8 @@ const questionsData = [
   {
     "id": 69,
     "question": "Który fragment jest poprawnym zapisem w formacie JSON:",
-    "answers": ["\"{imie:'Ala', nazwisko:'Kowalska'}\"", "\"{'imie':'Ala', 'nazwisko':'Kowalska'}\"", "\"{'imie':'Ala'; 'nazwisko:'Kowalska';}\"", "\"{'imie':'Ala', 'nazwisko':'Kowalska', wiek:function() {return 12;}}\""],
-    "correct": 0
+    "answers": ["\"{imie:'Ala', nazwisko:'Kowalska'}\"", "\"{"imie":"Ala", "nazwisko":"Kowalska"}\"", "\"{'imie':'Ala'; 'nazwisko:'Kowalska';}\"", "\"{'imie':'Ala', 'nazwisko':'Kowalska', wiek:function() {return 12;}}\""],
+    "correct": 1
   },
   {
     "id": 70,
