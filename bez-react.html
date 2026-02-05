@@ -1,263 +1,177 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz TI</title>
-    <style>
-        /* Prosty styl dla ciemnego motywu */
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        .quiz-container {
-            background-color: #1e1e1e;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            width: 90%;
-            max-width: 800px;
-            text-align: center;
-        }
-
-        h1 { color: #bb86fc; }
-
-        .btn {
-            background-color: #333;
-            color: white;
-            border: 1px solid #555;
-            padding: 15px 20px; /* Nieco większe przyciski */
-            margin: 8px 0;
-            width: 100%;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 16px;
-            text-align: left; /* Domyślne wyrównanie dla odpowiedzi */
-            transition: background 0.3s;
-        }
-
-        /* Styl dla przycisków menu (wyśrodkowany tekst) */
-        .menu-btn {
-            text-align: center;
-            background-color: #bb86fc; /* Wyróżniający kolor */
-            color: #000;
-            font-weight: bold;
-        }
-        .menu-btn:hover { background-color: #9f75cf; }
-
-        .btn:hover { background-color: #444; }
-
-        .btn.correct { background-color: #4caf50; border-color: #4caf50; }
-        .btn.wrong { background-color: #f44336; border-color: #f44336; }
-
-        #next-btn {
-            background-color: #bb86fc;
-            color: black;
-            font-weight: bold;
-            margin-top: 20px;
-            display: none;
-            width: auto;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: center;
-        }
-
-        .score-box {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #aaa;
-        }
-
-        /* Klasa do ukrywania elementów */
-        .hidden { display: none; }
-        
-        #error-msg { color: #cf6679; margin-top: 10px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz PSI – bez React</title>
+<style>
+body {
+    background:#121212; color:#fff; font-family:Arial;
+    display:flex; justify-content:center; align-items:center;
+    min-height:100vh; margin:0;
+}
+.quiz-container {
+    background:#1e1e1e; padding:20px; border-radius:10px;
+    width:90%; max-width:800px; text-align:center;
+}
+h1 { color:#bb86fc }
+.btn {
+    width:100%; padding:15px; margin:8px 0;
+    background:#333; color:#fff; border:1px solid #555;
+    border-radius:5px; cursor:pointer;
+}
+.menu-btn { background:#bb86fc; color:#000; font-weight:bold; }
+.btn.correct { background:#4caf50 }
+.btn.wrong { background:#f44336 }
+.hidden { display:none }
+#next-btn { background:#bb86fc; color:#000; display:none; margin:20px auto }
+</style>
 </head>
+
 <body>
 
 <div id="start-screen" class="quiz-container">
-    <h1>Quiz Wiedzy TI</h1>
-    <p>Wybierz tryb gry:</p>
-    
-    <button class="btn menu-btn" onclick="startMode('all')">Wszystkie pytania</button>
-    <button class="btn menu-btn" onclick="startMode('random30')">Losowe 30 pytań</button>
-    <button class="btn menu-btn" onclick="location.href='index.html'">Wersja z React i TypeScript</button>
+<h1>Quiz TI – bez React / TS</h1>
 
-    <div id="error-msg"></div>
+<button class="btn menu-btn" onclick="startSmart30()">
+    Losowe 30
+</button>
+
+<button class="btn menu-btn" onclick="startAllSmart()">
+    Wszystkie pytania
+</button>
+
+<button class="btn menu-btn" onclick="location.href='index.html'">
+    Powrót
+</button>
 </div>
 
+
 <div id="quiz-screen" class="quiz-container hidden">
-    <h1 id="quiz-title">Quiz</h1>
-    <div class="score-box">Pytanie: <span id="current-q">1</span> / <span id="total-q">0</span></div>
-    
-    <div id="question-text" style="font-size: 1.2em; margin-bottom: 20px;">
-        Ładowanie pytań...
-    </div>
-
-    <div id="answer-buttons">
-        </div>
-
-    <button id="next-btn" class="btn" style="text-align: center;" onclick="nextQuestion()">Następne pytanie</button>
+<h1 id="quiz-title"></h1>
+<p>Pytanie <span id="current-q">1</span> / <span id="total-q">0</span></p>
+<div id="question-text"></div>
+<div id="answer-buttons"></div>
+<button id="next-btn" class="btn" onclick="nextQuestion()">Następne</button>
 </div>
 
 <script src="pytania.js"></script>
-
 <script>
-    // --- ZMIENNE GLOBALNE ---
-    let currentQuestionIndex = 0;
-    let score = 0;
-    let questions = []; // Tutaj trafią pytania (wszystkie lub wylosowane)
+const USED='used_q', STATS='stats_q';
+let questions=[], current=0, score=0;
 
-    // --- ELEMENTY DOM ---
-    const startScreen = document.getElementById('start-screen');
-    const quizScreen = document.getElementById('quiz-screen');
-    const errorMsg = document.getElementById('error-msg');
+questionsData.forEach((q,i)=>q.id=i);
 
-    const questionElement = document.getElementById('question-text');
-    const answerButtonsElement = document.getElementById('answer-buttons');
-    const nextButton = document.getElementById('next-btn');
-    const currentQSpan = document.getElementById('current-q');
-    const totalQSpan = document.getElementById('total-q');
-    const quizTitle = document.getElementById('quiz-title');
+function filter(data){
+    const bad=['react','jsx','typescript','hook','usestate','useeffect'];
+    return data.filter(q=>{
+        const t=(q.question+' '+q.answers.join(' ')).toLowerCase();
+        return !bad.some(b=>t.includes(b));
+    });
+}
 
-    // --- SPRAWDZENIE CZY PLIK DZIAŁA ---
-    if (typeof questionsData === 'undefined') {
-        errorMsg.innerText = "Błąd: Nie znaleziono pliku 'pytania.js'. Upewnij się, że jest w tym samym folderze.";
-        // Blokujemy przyciski, jeśli nie ma danych
-        const menuBtns = document.querySelectorAll('.menu-btn');
-        menuBtns.forEach(btn => btn.disabled = true);
-    }
+function getStats(){ return JSON.parse(localStorage.getItem(STATS))||{} }
+function saveStats(s){ localStorage.setItem(STATS,JSON.stringify(s)) }
+function getUsed(){ return JSON.parse(localStorage.getItem(USED))||[] }
+function saveUsed(u){ localStorage.setItem(USED,JSON.stringify(u)) }
 
-    function filterNoReactTS(data) {
-        const forbidden = [
-            'react',
-            'jsx',
-            'typescript',
-            'type script',
-            'ts ',
-            'ts.',
-            'komponent react',
-            'hook',
-            'usestate',
-            'useeffect'
-        ];
+function weightedPick(all){
+    const stats=getStats(), used=getUsed();
+    let pool=all.filter(q=>!used.includes(q.id));
+    if(pool.length<30){ pool=[...all]; localStorage.removeItem(USED); }
 
-        return data.filter(q => {
-            const text = (
-                q.question + ' ' + q.answers.join(' ')
-            ).toLowerCase();
+    return pool.map(q=>{
+        const s=stats[q.id];
+        const w=s ? 1+s.wrong*3 : 1;
+        return {q,w};
+    }).sort(()=>Math.random()-0.5)
+      .sort((a,b)=>b.w-a.w)
+      .slice(0,30).map(e=>e.q);
+}
 
-            return !forbidden.some(word => text.includes(word));
-        });
-    }
+function startSmart30(){
+    const all = filter([...questionsData]);
+    questions = weightedPick(all);
 
+    document.getElementById('quiz-title')
+        .innerText = `Bez React / TS – losowe (${questions.length})`;
 
-    // --- FUNKCJA WYBORU TRYBU ---
-    function startMode(mode) {
-        if (typeof questionsData === 'undefined') return;
+    document.getElementById('total-q').innerText = questions.length;
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('quiz-screen').classList.remove('hidden');
+    show();
+}
 
-        let allQuestions = filterNoReactTS([...questionsData]);
+function startAllSmart(){
+    const all = filter([...questionsData]);
 
-        if (mode === 'all') {
-            questions = allQuestions;
-            quizTitle.innerText =
-            `Bez React / TS (${questions.length} pytań)`;
-        } 
-        else if (mode === 'random30') {
-            questions = allQuestions.sort(() => 0.5 - Math.random());
-            questions = questions.slice(0, 30);
-            quizTitle.innerText =
-            `Bez React / TS – losowe 30 (${questions.length} pytań)`;
-        }
+    const stats = getStats();
+    questions = all.sort((a, b) => {
+        const wa = stats[a.id]?.wrong || 0;
+        const wb = stats[b.id]?.wrong || 0;
+        return wb - wa;
+    });
 
-        startScreen.classList.add('hidden');
-        quizScreen.classList.remove('hidden');
+    document.getElementById('quiz-title')
+        .innerText = `Bez React / TS – wszystkie (${questions.length})`;
 
-        startQuiz();
+    document.getElementById('total-q').innerText = questions.length;
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('quiz-screen').classList.remove('hidden');
+    show();
 }
 
 
-    // --- LOGIKA QUIZU ---
-    function startQuiz() {
-        currentQuestionIndex = 0;
-        score = 0;
-        totalQSpan.innerText = questions.length;
-        showQuestion();
+function show(){
+    const q=questions[current];
+    document.getElementById('question-text').innerText=q.question;
+    document.getElementById('current-q').innerText=current+1;
+    const box=document.getElementById('answer-buttons');
+    box.innerHTML='';
+    document.getElementById('next-btn').style.display='none';
+    q.answers.forEach((a,i)=>{
+        const b=document.createElement('button');
+        b.className='btn'; b.innerText=a;
+        b.onclick=()=>select(i,b);
+        box.appendChild(b);
+    });
+}
+
+function select(i,btn){
+    const q=questions[current];
+    const stats=getStats();
+    if(!stats[q.id]) stats[q.id]={shown:0,wrong:0};
+    stats[q.id].shown++;
+    if(i!==q.correct) stats[q.id].wrong++;
+    saveStats(stats);
+
+    const used=getUsed(); if(!used.includes(q.id)){ used.push(q.id); saveUsed(used); }
+
+    [...document.getElementById('answer-buttons').children]
+        .forEach(b=>b.disabled=true);
+
+    if(i===q.correct){ btn.classList.add('correct'); score++; }
+    else {
+        btn.classList.add('wrong');
+        document.getElementById('answer-buttons')
+            .children[q.correct].classList.add('correct');
     }
+    document.getElementById('next-btn').style.display='block';
+}
 
-    function showQuestion() {
-        resetState();
-        let currentQuestion = questions[currentQuestionIndex];
-        
-        // Wyświetlanie treści pytania
-        questionElement.innerText = currentQuestion.question;
-        currentQSpan.innerText = currentQuestionIndex + 1;
+function nextQuestion(){
+    current++;
+    current<questions.length ? show() : end();
+}
 
-        // Generowanie przycisków odpowiedzi
-        currentQuestion.answers.forEach((answer, index) => {
-            const button = document.createElement('button');
-            button.innerText = answer;
-            button.classList.add('btn');
-            button.addEventListener('click', () => selectAnswer(index, button));
-            answerButtonsElement.appendChild(button);
-        });
-    }
-
-    function resetState() {
-        nextButton.style.display = 'none';
-        answerButtonsElement.innerHTML = '';
-    }
-
-    function selectAnswer(selectedIndex, selectedButton) {
-        const correctIndex = questions[currentQuestionIndex].correct;
-        
-        const buttons = answerButtonsElement.children;
-        // Zablokuj wszystkie przyciski po wyborze
-        for(let btn of buttons) {
-            btn.disabled = true;
-        }
-
-        if (selectedIndex === correctIndex) {
-            selectedButton.classList.add('correct');
-            score++;
-        } else {
-            selectedButton.classList.add('wrong');
-            // Podświetl poprawną odpowiedź, jeśli wybrano źle
-            if(buttons[correctIndex]) {
-                buttons[correctIndex].classList.add('correct');
-            }
-        }
-
-        nextButton.style.display = 'block';
-    }
-
-    function nextQuestion() {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < questions.length) {
-            showQuestion();
-        } else {
-            showScore();
-        }
-    }
-
-    function showScore() {
-        resetState();
-        questionElement.innerText = `Koniec! Twój wynik: ${score} na ${questions.length}`;
-        
-        // Zmieniamy przycisk "Następne" na "Menu Główne"
-        nextButton.innerText = "Wróć do Menu";
-        nextButton.style.display = 'block';
-        nextButton.onclick = () => location.reload(); // Odświeżenie strony wraca do menu
-    }
+function end(){
+    document.getElementById('question-text')
+        .innerText=`Wynik: ${score}/${questions.length}`;
+    document.getElementById('answer-buttons').innerHTML='';
+    const b=document.getElementById('next-btn');
+    b.innerText='Menu'; b.style.display='block';
+    b.onclick=()=>location.reload();
+}
 </script>
-
 </body>
 </html>
