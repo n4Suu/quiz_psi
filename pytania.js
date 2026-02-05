@@ -103,7 +103,7 @@ const questionsData = [
   },
   {
     "id": 18,
-    "question": "Dany jest kod klasy TodoClass. Metoda toString dodana do prototypu będzie dostępna:",
+    "question": "Dany jest kod klasy TodoClass. Metoda toString dodana do prototypu będzie dostępna:\n\n<pre><code>class TodoClass {\n  constructor(title, description) {\n    this.title = title;\n    this.description = description;\n  }\n}\n\nlet taski = new TodoClass(\"Zadanie 1\", \"Opis 1\");\n\nTodoClass.prototype.toString = function () {\n  return this.title + \" \" + this.description;\n};</code></pre>",
     "answers": ["Tylko w obiekcie przypisanym", "We wszystkich obiektach utworzonych na podstawie klasy TodoClass", "W obiektach utworzonych na podstawie klasy TodoClass przed dołączeniem metody toString do prototypu", "W obiektach utworzonych na podstawie klasy TodoClass po dołączeniu metody toString do prototypu"],
     "correct": 1
   },
@@ -139,8 +139,9 @@ const questionsData = [
   },
   {
     "id": 24,
-    "question": "Kliknięcie na element #link spowoduje:",
-    "answers": ["wyświetlenie w konsoli przeglądarki wartości 12", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ obiekt e nie posiada metody preventDefault();", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ nieznany jest element x", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ metoda kliknięcie nie otrzymuje wartości parametru e"],
+    "question": "Kliknięcie na element #link spowoduje:\n\n<pre><code>class Aplikacja {\n  init() {\n    this.x = 12;\n    this.document\n      .querySelector(\"#link\")\n      .addEventListener(\"click\", this.klikniecie);\n  }\n  klikniecie(e) {\n    e.preventDefault();\n    console.log(this.x);\n  }\n}</code></pre>",
+    "answers": ["wyświetlenie w konsoli przeglądarki wartości 12", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ obiekt e nie posiada metody preventDefault();", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ nieznany jest element x", "wyświetlenie w konsoli komunikatu o błędzie, ponieważ metoda kliknięcie nie otrzymuje wartości parametru e"
+    ],
     "correct": 2
   },
   {
