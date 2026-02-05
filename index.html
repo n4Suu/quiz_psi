@@ -91,6 +91,13 @@
     let score = 0;
     let questions = [];
 
+    const questionElement = document.getElementById('question-text');
+    const answerButtonsElement = document.getElementById('answer-buttons');
+    const nextButton = document.getElementById('next-btn');
+    const currentQSpan = document.getElementById('current-q');
+    const totalQSpan = document.getElementById('total-q');
+
+
     // Sprawdzamy, czy plik pytania.js się załadował
     if (typeof questionsData !== 'undefined') {
         questions = questionsData;
@@ -98,12 +105,6 @@
     } else {
         document.getElementById('question-text').innerText = "Błąd: Nie znaleziono pliku 'pytania.js'. Upewnij się, że jest w tym samym folderze co index.html";
     }
-
-    const questionElement = document.getElementById('question-text');
-    const answerButtonsElement = document.getElementById('answer-buttons');
-    const nextButton = document.getElementById('next-btn');
-    const currentQSpan = document.getElementById('current-q');
-    const totalQSpan = document.getElementById('total-q');
 
     function startQuiz() {
         totalQSpan.innerText = questions.length;
