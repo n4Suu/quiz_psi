@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz PSI</title>
+    <title>Quiz TI</title>
     <style>
         /* Prosty styl dla ciemnego motywu */
         body {
@@ -84,13 +84,12 @@
 <body>
 
 <div id="start-screen" class="quiz-container">
-    <h1>Quiz Wiedzy PSI</h1>
+    <h1>Quiz Wiedzy TI</h1>
     <p>Wybierz tryb gry:</p>
     
     <button class="btn menu-btn" onclick="startMode('all')">Wszystkie pytania</button>
     <button class="btn menu-btn" onclick="startMode('random30')">Losowe 30 pytań</button>
-    <button class="btn menu-btn" onclick="location.href='bez-react.html'">Wersja bez React'a i TypeScripta</button>
-
+    <button class="btn menu-btn" onclick="location.href='index.html'">Wersja z React i TypeScript</button>
 
     <div id="error-msg"></div>
 </div>
@@ -137,31 +136,54 @@
         menuBtns.forEach(btn => btn.disabled = true);
     }
 
+    function filterNoReactTS(data) {
+        const forbidden = [
+            'react',
+            'jsx',
+            'typescript',
+            'type script',
+            'ts ',
+            'ts.',
+            'komponent react',
+            'hook',
+            'usestate',
+            'useeffect'
+        ];
+
+        return data.filter(q => {
+            const text = (
+                q.question + ' ' + q.answers.join(' ')
+            ).toLowerCase();
+
+            return !forbidden.some(word => text.includes(word));
+        });
+    }
+
+
     // --- FUNKCJA WYBORU TRYBU ---
     function startMode(mode) {
         if (typeof questionsData === 'undefined') return;
 
-        // Kopiujemy dane, żeby nie niszczyć oryginału
-        let allQuestions = [...questionsData];
+        let allQuestions = filterNoReactTS([...questionsData]);
 
         if (mode === 'all') {
             questions = allQuestions;
-            quizTitle.innerText = "Wszystkie Pytania";
-        } else if (mode === 'random30') {
-            // Algorytm losujący (Fisher-Yates shuffle - uproszczony)
+            quizTitle.innerText =
+            `Bez React / TS (${questions.length} pytań)`;
+        } 
+        else if (mode === 'random30') {
             questions = allQuestions.sort(() => 0.5 - Math.random());
-            // Wybieramy pierwsze 30
             questions = questions.slice(0, 30);
-            quizTitle.innerText = "Losowe 30 Pytań";
+            quizTitle.innerText =
+            `Bez React / TS – losowe 30 (${questions.length} pytań)`;
         }
 
-        // Przełączamy widok
         startScreen.classList.add('hidden');
         quizScreen.classList.remove('hidden');
 
-        // Startujemy quiz
         startQuiz();
-    }
+}
+
 
     // --- LOGIKA QUIZU ---
     function startQuiz() {
