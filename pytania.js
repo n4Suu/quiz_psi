@@ -157,9 +157,9 @@ const questionsData = [
   },
   {
     "id": 27,
-    "question": "Które reguły pozwolą umieścić element wewnętrzny o 3px od lewej krawędzi elementu zewnętrznego:",
-    "answers": ["div Z {position: relative...}, div W {position: absolute...}", "div Z {position: absolute...}, div W {position: relative...}", "div Z {position: relative...}, div W {position: absolute...}", "div Z {position: static...}, div W {position: absolute...}"],
-    "correct": 0
+    "question": "Dany jest fragment strony html <div class=”Z”><div class=”W”>BBB</div></div> Które reguły pozwolą umieścić element wewnętrzny o 3px od lewej krawędzi elementu zewnętrznego.",
+    "answers": ["div Z {position: relative, left, 3px}, div W {position: absolute}", "div Z {position: absolute}, div W {position: relative, left: 3px}", " div Z {position: relative}, div W {position: absolute, left: 3px}", "div Z {position: static, left, 3px}, div W {position: absolute}"],
+    "correct": 1
   },
   {
     "id": 28,
