@@ -578,7 +578,7 @@ const questionsData = [
   {
     "id": 97,
     "question": "Która wartość atrybutu należy podać w znaczniku a, aby link otwierał się w nowym oknie?",
-    "answers": ["a.target=\"_new\"", "a.target=\"_top\"", "a.target=\"_self\"", "a.target=\"blank\""],
+    "answers": ["a.target=\"_new\"", "a.target=\"_top\"", "a.target=\"_self\"", "a.target=\"_blank\""],
     "correct": 3
   },
   {
